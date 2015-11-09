@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Demo oauth2 client</title>
+</head>
+<body>
+    <p><strong>Authentication result:</strong></p>
+    <ul>
+    {% if token and api_result %}
+        <li>
+            <span style="color: green; font-weight: bold">Succesfully connected</span> <a href="/reset">reset</a>
+        </li>
+        <li>
+            Valid until: 
+            {% if token.refresh_token %}<a href="/refresh">refresh</a>{% endif %}<br />
+            <pre>{{ token.expiry_datetime.strftime('%Y-%m-%d %H:%M:%S') }}</pre>
+        </li>
+        <li>
+            Result from whoami call: <a href="/">reload</a><br />
+            <pre>{{ api_result.data }}</pre>
+        </li>
+    {% else %}
+        {% if token %}
+        <li>
+            <span style="color: red; font-weight: bold">Token is invalid or may be expired</span> <a href="/refresh">try refresh</a></li>
+        {% endif %}
+        <li><a href="/authorize">Authorize</a></li>
+    {% endif %}
+    </ul>
+
+    <div>
+        <p><strong>Current session data:</strong></p>
+        <pre>{{ session.data }}</pre>
+    </div>
+
+</body>
+</html>
+
