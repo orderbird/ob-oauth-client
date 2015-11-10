@@ -7,7 +7,7 @@ CLIENT_SECRET = 'kz2ppMsjosVvE0DgmaDPAs4lCRodDbD1p8BvcqIqvS5XaSGxbeOhbFfhaU3Og1r
 SERVER_URL = 'http://127.0.0.1:8000'
 
 redirect_uri = 'http://127.0.0.1:5000/authorized'
-scope = ['read', 'write']
+scope = ['read', 'account']
 
 authorization_base_url = SERVER_URL + '/auth/authorize/'
 token_url = SERVER_URL + '/auth/token/'
