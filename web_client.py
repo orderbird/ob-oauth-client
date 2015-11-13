@@ -23,7 +23,7 @@ def start():
     api_result = None
     if 'oauth_token' in session:
         oauth = init_client(token=session['oauth_token'])
-        result = oauth.get('http://localhost:8000/api/v3/whoami')
+        result = oauth.get(app.config.get('API_WHOAMI'))
         api_result = jsonify(result.json()) if result else None
 
     return render_template('start.html',
