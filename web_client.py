@@ -1,4 +1,5 @@
 import datetime
+from functools import wraps
 import logging
 from optparse import OptionParser
 import os
@@ -7,6 +8,41 @@ from flask import Flask, url_for, session, request, redirect, render_template, j
 from requests_oauthlib import OAuth2Session
 
 app = Flask(__name__)
+
+
+# a simple, in-memory database :)
+# TODO: use sqlite??
+user_tokens = dict()
+
+
+def set_token(token):
+    username = session.get('username')
+    user_tokens[username] = token
+
+
+def get_token():
+    username = session.get('username')
+    if username:
+        return user_tokens.get(username)
+
+
+def delete_token():
+    username = session.get('username')
+    user_tokens.pop(username, None)
+
+
+def get_from_session(key, default=None):
+    username = session.get('username')
+    usersessions = session.get('usersessions', {})
+    if username and username in usersessions:
+        return usersessions.get(username).get(key, None)
+
+
+def set_in_session(key, value):
+    username = session.get('username')
+    usersessions = session.get('usersessions', {})
+    if username and username in usersessions:
+        usersessions.get(username)[key] = None
 
 
 def init_client(*args, **kwargs):
@@ -18,22 +54,49 @@ def init_client(*args, **kwargs):
                          **kwargs)
 
 
+def requires_auth(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        if not session.get('username'):
+            return redirect(url_for('.login'))
+
+        return f(*args, **kwargs)
+    return decorated
+
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    if request.method == 'GET':
+        return render_template('login.html')
+    session['username'] = request.form['username']
+    return redirect(url_for('.start'))
+
+
+@app.route('/logout')
+def logout():
+    session['username'] = None
+    return redirect(url_for('.start'))
+
+
 @app.route('/')
+@requires_auth
 def start():
     api_result = None
-    if 'oauth_token' in session:
-        oauth = init_client(token=session['oauth_token'])
+    token = get_token()
+    if token:
+        oauth = init_client(token=token)
         result = oauth.get(app.config.get('API_WHOAMI'))
         api_result = jsonify(result.json()) if result else None
 
     return render_template('start.html',
-                           user=None,
+                           username=session.get('username'),
                            api_result=api_result,
-                           session=jsonify(session.get('oauth_token', {})),
-                           token=session.get('oauth_token', None))
+                           session_data=jsonify(token or {}),
+                           token=token)
 
 
 @app.route('/authorize')
+@requires_auth
 def authorize():
     oauth = init_client()
     authorization_url, state = oauth.authorization_url(
@@ -45,35 +108,38 @@ def authorize():
 
 
 @app.route('/reset')
+@requires_auth
 def reset():
-    if 'oauth_token' in session:
-        del session['oauth_token']
+    # TODO: use logout instead
+    delete_token()
     return redirect(url_for('.start'))
 
 
 @app.route('/authorized')
+@requires_auth
 def authorized():
     """
     Callback uri for delivering the authentication code from oauth2 server.
 
     """
-    oauth = init_client(state=session['oauth_state'])
+    oauth = init_client(state=session.get('oauth_state'))
     token = oauth.fetch_token(app.config.get('OAUTH_ENDPOINT_TOKEN'),
                               client_secret=app.config.get('CLIENT_SECRET'),  # TODO really needed here?
                               authorization_response=request.url)
-
-    session['oauth_token'] = token
-    session['oauth_token']['expiry_datetime'] = datetime.datetime.fromtimestamp(session['oauth_token']['expires_at'])
+    token['expiry_datetime'] = datetime.datetime.fromtimestamp(token.get('expires_at'))
+    set_token(token)
     return redirect(url_for('.start'))
 
 
 @app.route('/refresh')
+@requires_auth
 def refresh():
-    oauth = init_client(token=session['oauth_token'])
-    session['oauth_token'] = oauth.refresh_token(app.config.get('OAUTH_ENDPOINT_REFRESH'),
-                                                 client_id=app.config.get('CLIENT_ID'),
-                                                 client_secret=app.config.get('CLIENT_SECRET'))
-    session['oauth_token']['expiry_datetime'] = datetime.datetime.fromtimestamp(session['oauth_token']['expires_at'])
+    oauth = init_client(token=get_token())
+    token = oauth.refresh_token(app.config.get('OAUTH_ENDPOINT_REFRESH'),
+                                client_id=app.config.get('CLIENT_ID'),
+                                client_secret=app.config.get('CLIENT_SECRET'))
+    token['expiry_datetime'] = datetime.datetime.fromtimestamp(get_token().get('expires_at'))
+    set_token(token)
     return redirect(url_for('.start'))
 
 

@@ -5,6 +5,10 @@
   <title>Demo oauth2 client</title>
 </head>
 <body>
+    <p>
+        <strong>You are logged in as {{ username }}</strong>
+        <a href="/logout">Logout</a>
+    </p>
     <p><strong>Authentication result:</strong></p>
     <ul>
     {% if token and api_result %}
@@ -31,9 +35,8 @@
 
     <div>
         <p><strong>Current session data:</strong></p>
-        <pre>{{ session.data }}</pre>
+        <pre>{{ session_data.data }}</pre>
     </div>
-
 </body>
 </html>
 
