@@ -58,7 +58,8 @@ def requires_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         if not session.get('username'):
-            return redirect(url_for('.login'))
+            redirect_to = '{}?next={}'.format(url_for('.login'), request.url)
+            return redirect(redirect_to)
 
         return f(*args, **kwargs)
     return decorated
@@ -69,7 +70,8 @@ def login():
     if request.method == 'GET':
         return render_template('login.html')
     session['username'] = request.form['username']
-    return redirect(url_for('.start'))
+    redirect_to = request.args.get('next', url_for('.start'))
+    return redirect(redirect_to)
 
 
 @app.route('/logout')
