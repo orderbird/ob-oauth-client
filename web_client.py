@@ -100,7 +100,7 @@ def start():
 @app.route('/authorize')
 @requires_auth
 def authorize():
-    session['redirect_to'] = request.referrer
+    session['redirect_to'] = request.args.get('next', None)
     oauth = init_client()
     authorization_url, state = oauth.authorization_url(
         app.config.get('OAUTH_ENDPOINT_AUTHORIZE'),
@@ -131,7 +131,9 @@ def authorized():
                               authorization_response=request.url)
     token['expiry_datetime'] = datetime.datetime.fromtimestamp(token.get('expires_at'))
     set_token(token)
-    redirect_to = session.get('redirect_to')
+    redirect_to = session.get('redirect_to', None)
+    if not redirect_to:
+        redirect_to = url_for('.start', _external=True)
     return redirect(redirect_to)
 
 
