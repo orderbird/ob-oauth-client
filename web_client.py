@@ -45,7 +45,7 @@ def set_in_session(key, value):
         usersessions.get(username)[key] = None
 
 
-def init_client(*args, **kwargs):
+def init_client(**kwargs):
     redirect_uri = url_for('authorized', _external=True)
     scope = ['read', 'account']
     return OAuth2Session(client_id=app.config.get('CLIENT_ID'),
