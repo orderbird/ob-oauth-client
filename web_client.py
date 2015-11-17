@@ -125,12 +125,14 @@ def authorized():
     Callback uri for delivering the authentication code from oauth2 server.
 
     """
-    oauth = init_client(state=session.get('oauth_state'))
-    token = oauth.fetch_token(app.config.get('OAUTH_ENDPOINT_TOKEN'),
-                              client_secret=app.config.get('CLIENT_SECRET'),  # TODO really needed here?
-                              authorization_response=request.url)
-    token['expiry_datetime'] = datetime.datetime.fromtimestamp(token.get('expires_at'))
-    set_token(token)
+    error = request.args.get('error', None)
+    if not error:
+        oauth = init_client(state=session.get('oauth_state'))
+        token = oauth.fetch_token(app.config.get('OAUTH_ENDPOINT_TOKEN'),
+                                  client_secret=app.config.get('CLIENT_SECRET'),  # TODO really needed here?
+                                  authorization_response=request.url)
+        token['expiry_datetime'] = datetime.datetime.fromtimestamp(token.get('expires_at'))
+        set_token(token)
     redirect_to = session.get('redirect_to', None)
     if not redirect_to:
         redirect_to = url_for('.start', _external=True)
