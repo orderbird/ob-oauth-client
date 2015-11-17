@@ -5,6 +5,7 @@ from optparse import OptionParser
 import os
 
 from flask import Flask, url_for, session, request, redirect, render_template, jsonify
+from oauthlib.oauth2 import InvalidGrantError
 from requests_oauthlib import OAuth2Session
 
 app = Flask(__name__)
@@ -142,12 +143,15 @@ def authorized():
 @app.route('/refresh')
 @requires_auth
 def refresh():
-    oauth = init_client(token=get_token())
-    token = oauth.refresh_token(app.config.get('OAUTH_ENDPOINT_REFRESH'),
-                                client_id=app.config.get('CLIENT_ID'),
-                                client_secret=app.config.get('CLIENT_SECRET'))
-    token['expiry_datetime'] = datetime.datetime.fromtimestamp(get_token().get('expires_at'))
-    set_token(token)
+    try:
+        oauth = init_client(token=get_token())
+        token = oauth.refresh_token(app.config.get('OAUTH_ENDPOINT_REFRESH'),
+                                    client_id=app.config.get('CLIENT_ID'),
+                                    client_secret=app.config.get('CLIENT_SECRET'))
+        token['expiry_datetime'] = datetime.datetime.fromtimestamp(get_token().get('expires_at'))
+        set_token(token)
+    except InvalidGrantError:
+        pass
     return redirect(url_for('.start'))
 
 
