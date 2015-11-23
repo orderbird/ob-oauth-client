@@ -1,16 +1,18 @@
-from requests_oauthlib import OAuth2Session
 import logging
+
+from requests_oauthlib import OAuth2Session
+
 logging.basicConfig(level=logging.DEBUG)
 
-CLIENT_ID = 'wZG5M5xRGZdh1D1cZ7IDNio4a4IqEqiO4H02ImIo'
-CLIENT_SECRET = 'kz2ppMsjosVvE0DgmaDPAs4lCRodDbD1p8BvcqIqvS5XaSGxbeOhbFfhaU3Og1rEXbCokQck4sH8QKyvmQ02jmKpx3vbFoNJymGi3lJglV9DjHTDdlVvbLuslzTegzFO'
-SERVER_URL = 'http://127.0.0.1:8000'
+CLIENT_ID = 'mmBkMZM5El0RVbhAJEWSE1W5R8oOkEL8V9mKeKhp'
+CLIENT_SECRET = '14qlnQe0BadwF9DkEmBgmQExlYmPkxaZ5mGGsDkY3KRG4OPuj0VX4xvQTpR6axXAE1gfRWAojL4MQQTMO7XODDorCe64PSplIr4JrhHEMFB69KIOeaARKEElfZQIUdPF'
+SERVER_URL = 'https://lab.orderbird.com/'
 
-redirect_uri = 'http://127.0.0.1:5000/authorized'
+redirect_uri = 'http://localhost:5000/authorized/'
 scope = ['read', 'account']
 
-authorization_base_url = SERVER_URL + '/auth/authorize/'
-token_url = SERVER_URL + '/auth/token/'
+authorization_base_url = SERVER_URL + '/oauth2/authorize/'
+token_url = SERVER_URL + '/oauth2/token/'
 
 myob_oauth = OAuth2Session(CLIENT_ID,
                            scope=scope,
