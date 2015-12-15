@@ -10,4 +10,4 @@ OAUTH_ENDPOINT_REFRESH = OAUTH_ENDPOINT_TOKEN
 
 OAUTHLIB_INSECURE_TRANSPORT = True
 
-API_WHOAMI = 'https://lab.orderbird.com/api/v3/whoami'
+API_WHOAMI = 'https://lab.orderbird.com/v1/whoami'

@@ -104,9 +104,7 @@ def authorize():
     session['redirect_to'] = request.args.get('next', None)
     oauth = init_client()
     authorization_url, state = oauth.authorization_url(
-        app.config.get('OAUTH_ENDPOINT_AUTHORIZE'),
-        access_type='offline',
-        approval_prompt='force')
+        app.config.get('OAUTH_ENDPOINT_AUTHORIZE'))
     session['oauth_state'] = state
     return redirect(authorization_url)
 
