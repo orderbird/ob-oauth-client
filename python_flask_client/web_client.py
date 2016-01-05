@@ -48,7 +48,7 @@ def set_in_session(key, value):
 
 def init_client(**kwargs):
     redirect_uri = url_for('authorized', _external=True)
-    scope = ['read', 'account']
+    scope = ['account-read']
     return OAuth2Session(client_id=app.config.get('CLIENT_ID'),
                          scope=scope,
                          redirect_uri=redirect_uri,
