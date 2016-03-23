@@ -33,5 +33,5 @@ myob_oauth.fetch_token(token_url,
                        authorization_response=redirect_response)
 
 # Fetch a protected resource, i.e. whoami
-r = myob_oauth.get(SERVER_URL + '/v1/whoami/')
+r = myob_oauth.get(SERVER_URL + '/public/v1/whoami/')
 print r.content
