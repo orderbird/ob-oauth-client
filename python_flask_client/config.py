@@ -6,6 +6,7 @@ CLIENT_SECRET = 'YOUR_APPLICATIONS_CLIENT_SECRET'
 
 OAUTH_ENDPOINT_AUTHORIZE = 'https://lab.orderbird.com/oauth2/authorize/'
 OAUTH_ENDPOINT_TOKEN = 'https://lab.orderbird.com/oauth2/token/'
+OAUTH_ENDPOINT_REVOKE = 'https://lab.orderbird.com/oauth2/revoke_token/'
 OAUTH_ENDPOINT_REFRESH = OAUTH_ENDPOINT_TOKEN
 
 OAUTHLIB_INSECURE_TRANSPORT = True

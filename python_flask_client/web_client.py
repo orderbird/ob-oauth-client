@@ -114,7 +114,7 @@ def authorize():
 def reset():
     # TODO: use logout instead
     delete_token()
-    return redirect(url_for('.start'))
+    return redirect(url_for('.revoke_token'))
 
 
 @app.route('/authorized')
@@ -150,6 +150,21 @@ def refresh():
         set_token(token)
     except InvalidGrantError:
         pass
+    return redirect(url_for('.start'))
+
+
+@app.route('/revoke')
+@requires_auth
+def revoke_token():
+    token = get_token()
+    if token:
+        oauth = init_client(token=token)
+        result = oauth.post(app.config.get('OAUTH_ENDPOINT_REVOKE'), data={
+            'client_id': app.config.get('CLIENT_ID'),
+            'client_secret': app.config.get('CLIENT_SECRET'),
+            'token': token.get('access_token')
+        })
+
     return redirect(url_for('.start'))
 
 
