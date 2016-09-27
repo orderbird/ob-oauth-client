@@ -6,7 +6,7 @@ logging.basicConfig(level=logging.DEBUG)
 
 CLIENT_ID = 'INSERT_YOUR_CLIENT_ID_HERE'
 CLIENT_SECRET = 'INSERT_YOUR_CLIENT_SECRET_HERE'
-SERVER_URL = 'https://lab.orderbird.com'
+SERVER_URL = 'https://sandbox-myob.orderbird.com'
 
 redirect_uri = 'http://localhost:5000/authorized/'
 scope = ['account-read']

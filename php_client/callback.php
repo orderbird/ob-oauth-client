@@ -8,7 +8,7 @@ $applicationId = 'REPLACE_ME';
 $applicationSecret = 'REPLACE_ME';
 $redirectUri = 'http://localhost/callback.php';
 
-$connectHost = 'https://lab.orderbird.com';
+$connectHost = 'https://sandbox-myob.orderbird.com';
 
 # Headers to provide to OAuth API endpoints
 $oauthRequestHeaders = array (
